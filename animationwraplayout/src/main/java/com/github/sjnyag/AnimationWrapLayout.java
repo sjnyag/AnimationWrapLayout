@@ -100,6 +100,16 @@ public class AnimationWrapLayout extends ViewGroup {
         SparseArray<Layout> layoutSet = mChildrenMeasure.init().measure().getLayoutSet();
         requestLayout();
         int count = this.getChildCount();
+        if (count == 0) {
+            addView(view, position);
+            addAnimation(mAddedViewContainer.view, alpha, new AnimationCallback() {
+                @Override
+                public void onEnd() {
+                    mAddedViewContainer = null;
+                }
+            });
+            return;
+        }
         for (int i = 0; i < count; i++) {
             final View child = this.getChildAt(i);
             if (!shouldLayout(child)) {
