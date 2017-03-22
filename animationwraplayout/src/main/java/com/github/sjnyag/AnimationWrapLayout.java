@@ -240,6 +240,8 @@ public class AnimationWrapLayout extends ViewGroup {
     }
 
     class ChildrenMeasure {
+        int mRowCount = 0;
+        int mColumnCount = 0;
         int mRowMaxWidth = getWidth();
         int mTop = 0;
         int mHeight = 0;
@@ -253,6 +255,8 @@ public class AnimationWrapLayout extends ViewGroup {
         }
 
         ChildrenMeasure init() {
+            mRowCount = 0;
+            mColumnCount = 0;
             mTop = 0;
             mHeight = 0;
             mCurrentRowWidth = 0;
@@ -315,25 +319,33 @@ public class AnimationWrapLayout extends ViewGroup {
             int bottomMargin = lp == null ? 0 : lp.bottomMargin;
             int childWidth = view.getMeasuredWidth();
             int childHeight = view.getMeasuredHeight();
-            int childTotalWidth = childWidth + rightMargin + leftMargin + mEachMarginWidth;
-            int childTotalHeight = childHeight + topMargin + bottomMargin + mEachMarginHeight;
+            int childTotalWidth = childWidth + rightMargin + leftMargin;
+            int childTotalHeight = childHeight + topMargin + bottomMargin;
 
-            if (isNewLine(childWidth)) {
-                mTop = mHeight;
+            if (isNewLine(childWidth) || (mColumnCount == 0 && mRowCount == 0)) {
+                mRowCount++;
+                mColumnCount = 1;
+                if (mRowCount > 1) {
+                    mTop = mHeight + mEachMarginHeight;
+                }
                 mCurrentRowHeight = 0;
                 mCurrentRowWidth = 0;
+            } else {
+                mColumnCount++;
             }
             if (mHeight < mTop + childTotalHeight) {
                 mHeight = mTop + childTotalHeight;
             }
-            Layout layout = new Layout(
-                    mCurrentRowWidth + leftMargin + mEachMarginWidth,
-                    mTop + topMargin + mEachMarginHeight,
-                    mCurrentRowWidth + childWidth + rightMargin + mEachMarginWidth,
-                    mTop + childHeight + bottomMargin + mEachMarginHeight);
+            if (mColumnCount > 1) {
+                mCurrentRowWidth += mEachMarginWidth;
+            }
+            int l = mCurrentRowWidth + leftMargin;
+            int t = mTop + topMargin;
+            int r = mCurrentRowWidth + childWidth + rightMargin;
+            int b = mTop + childHeight + bottomMargin;
             mCurrentRowHeight = mCurrentRowHeight < childTotalHeight ? childTotalHeight : mCurrentRowHeight;
             mCurrentRowWidth += childTotalWidth;
-            return layout;
+            return new Layout(l, t, r, b);
         }
 
         private boolean isNewLine(int width) {
