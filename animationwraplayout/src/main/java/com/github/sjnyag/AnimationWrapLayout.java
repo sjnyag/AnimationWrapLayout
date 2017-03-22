@@ -316,7 +316,9 @@ public class AnimationWrapLayout extends ViewGroup {
                 mRowHeight = 0;
                 mCurrentRowWidth = 0;
             }
-            mHeight = mTop + childHeight + bottomMargin;
+            if (mHeight < mTop + childHeight + bottomMargin) {
+                mHeight = mTop + childHeight + bottomMargin;
+            }
             Layout layout = new Layout(
                     mCurrentRowWidth + leftMargin + mEachMarginWidth,
                     mTop + topMargin,
