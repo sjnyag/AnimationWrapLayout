@@ -1,6 +1,7 @@
 package com.github.sjnyag.animationwraplayout;
 
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
@@ -13,6 +14,7 @@ import java.util.Locale;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
+
     int mCounter = 0;
     Random mRandom = new Random();
     AnimationWrapLayout mList;
@@ -30,15 +32,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private TextView inflateTextView() {
+        GradientDrawable shape = new GradientDrawable();
+        shape.setCornerRadius(8);
+        shape.setColor(0xff000000 | mRandom.nextInt(0x00ffffff));
         TextView textView = new TextView(this);
-        textView.setBackgroundColor(0xff000000 | mRandom.nextInt(0x00ffffff));
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(Color.WHITE);
-        textView.setWidth(200 + mRandom.nextInt(200));
-        textView.setHeight(200 + mRandom.nextInt(200));
-        textView.setTextSize(48);
+        textView.setWidth(100 + mRandom.nextInt(200));
+        textView.setHeight(100 + mRandom.nextInt(200));
+        textView.setTextSize(32);
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            textView.setBackgroundDrawable(shape);
+        } else {
+            textView.setBackground(shape);
+        }
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
