@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = new TextView(this);
         textView.setGravity(Gravity.CENTER);
         textView.setTextColor(Color.WHITE);
-        textView.setWidth(100 + mRandom.nextInt(200));
-        textView.setHeight(100 + mRandom.nextInt(200));
+        textView.setWidth(150 + mRandom.nextInt(200));
+        textView.setHeight(150 + mRandom.nextInt(200));
         textView.setTextSize(32);
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN) {
             textView.setBackgroundDrawable(shape);

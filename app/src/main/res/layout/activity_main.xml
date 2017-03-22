@@ -16,6 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:background="@color/colorAccent"
         animation_wrap_layout:each_margin_height="4dp"
         animation_wrap_layout:each_margin_width="4dp" />
 

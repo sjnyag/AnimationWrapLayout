@@ -56,7 +56,11 @@ public class AnimationWrapLayout extends ViewGroup {
         for (int i = 0; i < count; i++) {
             getChildAt(i).measure(childWidthSpec, childHeightSpec);
         }
-        this.setMeasuredDimension(rowMaxWidth, mChildrenMeasure.init().rowMaxWidth(rowMaxWidth).measure().getTotalHeight());
+        int totalHeight = mChildrenMeasure.init().rowMaxWidth(rowMaxWidth).measure().getTotalHeight();
+        if (mAddedViewContainer != null && getMeasuredHeight() > totalHeight) {
+            totalHeight = getMeasuredHeight();
+        }
+        this.setMeasuredDimension(rowMaxWidth, totalHeight);
     }
 
     @Override
@@ -68,7 +72,7 @@ public class AnimationWrapLayout extends ViewGroup {
             if (!shouldLayout(child)) {
                 continue;
             }
-            Layout layout = layoutSet.get(i);
+            Layout layout = layoutSet.valueAt(i);
             if (layout == null) {
                 continue;
             }
@@ -91,7 +95,7 @@ public class AnimationWrapLayout extends ViewGroup {
         return new AnimationWrapLayout.LayoutParams(p);
     }
 
-    public void addViewWithAnimation(final View view, final int position) {
+    synchronized public void addViewWithAnimation(final View view, final int position) {
         mAddedViewContainer = new AddedViewContainer(view, position);
         final float alpha = view.getAlpha();
         final List<View> animatedViewList = new ArrayList<>();
@@ -102,7 +106,7 @@ public class AnimationWrapLayout extends ViewGroup {
         int count = this.getChildCount();
         if (count == 0) {
             addView(view, position);
-            addAnimation(mAddedViewContainer.view, alpha, new AnimationCallback() {
+            addAnimation(view, alpha, new AnimationCallback() {
                 @Override
                 public void onEnd() {
                     mAddedViewContainer = null;
@@ -115,7 +119,7 @@ public class AnimationWrapLayout extends ViewGroup {
             if (!shouldLayout(child)) {
                 continue;
             }
-            final Layout layout = layoutSet.get(i);
+            final Layout layout = layoutSet.valueAt(i);
             if (layout == null) {
                 continue;
             }
@@ -128,11 +132,11 @@ public class AnimationWrapLayout extends ViewGroup {
                         animatedViewList.remove(child);
                     }
                     if (animatedViewList.isEmpty()) {
+                        mAddedViewContainer = null;
                         addView(view, position);
-                        addAnimation(mAddedViewContainer.view, alpha, new AnimationCallback() {
+                        addAnimation(view, alpha, new AnimationCallback() {
                             @Override
                             public void onEnd() {
-                                mAddedViewContainer = null;
                             }
                         });
                     }
@@ -144,7 +148,7 @@ public class AnimationWrapLayout extends ViewGroup {
         }
     }
 
-    public void removeViewWithAnimation(final View view) {
+    synchronized public void removeViewWithAnimation(final View view) {
         SparseArray<Layout> layoutSet = mChildrenMeasure.init().without(view).measure().getLayoutSet();
         int count = this.getChildCount();
         for (int i = 0; i < count; i++) {
@@ -152,7 +156,7 @@ public class AnimationWrapLayout extends ViewGroup {
             if (!shouldLayout(child)) {
                 continue;
             }
-            final Layout layout = layoutSet.get(i);
+            final Layout layout = layoutSet.valueAt(i);
             if (layout == null) {
                 continue;
             }
@@ -237,10 +241,10 @@ public class AnimationWrapLayout extends ViewGroup {
 
     class ChildrenMeasure {
         int mRowMaxWidth = getWidth();
-        int mCurrentRowWidth = 0;
         int mTop = 0;
-        int mRowHeight = 0;
         int mHeight = 0;
+        int mCurrentRowWidth = 0;
+        int mCurrentRowHeight = 0;
         boolean mIsIgnoreAddedView = false;
         View mRemoveView;
         SparseArray<Layout> mMeasuredLayoutSet = new SparseArray<>();
@@ -249,19 +253,14 @@ public class AnimationWrapLayout extends ViewGroup {
         }
 
         ChildrenMeasure init() {
-            mRowMaxWidth = getWidth();
-            mCurrentRowWidth = 0;
             mTop = 0;
-            mRowHeight = 0;
             mHeight = 0;
+            mCurrentRowWidth = 0;
+            mCurrentRowHeight = 0;
+            mRowMaxWidth = getWidth();
             mIsIgnoreAddedView = false;
             mRemoveView = null;
             mMeasuredLayoutSet.clear();
-            return this;
-        }
-
-        ChildrenMeasure without(View removeView) {
-            this.mRemoveView = removeView;
             return this;
         }
 
@@ -272,6 +271,11 @@ public class AnimationWrapLayout extends ViewGroup {
 
         ChildrenMeasure ignoreAddedView() {
             this.mIsIgnoreAddedView = true;
+            return this;
+        }
+
+        ChildrenMeasure without(View removeView) {
+            this.mRemoveView = removeView;
             return this;
         }
 
@@ -287,6 +291,8 @@ public class AnimationWrapLayout extends ViewGroup {
                     View child = getChildAt(i);
                     if (shouldLayout(child) && child != mRemoveView) {
                         mMeasuredLayoutSet.put(i, measureView(child));
+                    } else {
+                        mMeasuredLayoutSet.put(i, null);
                     }
                 }
             }
@@ -311,22 +317,27 @@ public class AnimationWrapLayout extends ViewGroup {
             int childHeight = view.getMeasuredHeight();
             int childTotalWidth = childWidth + rightMargin + leftMargin + mEachMarginWidth;
             int childTotalHeight = childHeight + topMargin + bottomMargin + mEachMarginHeight;
-            if (mRowMaxWidth < mCurrentRowWidth + childTotalWidth) {
-                mTop += mRowHeight < childTotalHeight ? childTotalHeight : mRowHeight;
-                mRowHeight = 0;
+
+            if (isNewLine(childWidth)) {
+                mTop = mHeight;
+                mCurrentRowHeight = 0;
                 mCurrentRowWidth = 0;
             }
-            if (mHeight < mTop + childHeight + bottomMargin) {
-                mHeight = mTop + childHeight + bottomMargin;
+            if (mHeight < mTop + childTotalHeight) {
+                mHeight = mTop + childTotalHeight;
             }
             Layout layout = new Layout(
                     mCurrentRowWidth + leftMargin + mEachMarginWidth,
-                    mTop + topMargin,
+                    mTop + topMargin + mEachMarginHeight,
                     mCurrentRowWidth + childWidth + rightMargin + mEachMarginWidth,
-                    mTop + childHeight + bottomMargin);
-            mRowHeight = mRowHeight < childTotalHeight ? childTotalHeight : mRowHeight;
+                    mTop + childHeight + bottomMargin + mEachMarginHeight);
+            mCurrentRowHeight = mCurrentRowHeight < childTotalHeight ? childTotalHeight : mCurrentRowHeight;
             mCurrentRowWidth += childTotalWidth;
             return layout;
+        }
+
+        private boolean isNewLine(int width) {
+            return mRowMaxWidth < mCurrentRowWidth + width;
         }
     }
 
