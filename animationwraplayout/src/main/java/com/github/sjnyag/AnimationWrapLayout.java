@@ -322,7 +322,7 @@ public class AnimationWrapLayout extends ViewGroup {
             int childTotalWidth = childWidth + rightMargin + leftMargin;
             int childTotalHeight = childHeight + topMargin + bottomMargin;
 
-            if (isNewLine(childWidth) || (mColumnCount == 0 && mRowCount == 0)) {
+            if (isNewLine(childWidth + mEachMarginWidth + rightMargin) || (mColumnCount == 0 && mRowCount == 0)) {
                 mRowCount++;
                 mColumnCount = 1;
                 if (mRowCount > 1) {
