@@ -257,8 +257,8 @@ public class AnimationWrapLayout extends ViewGroup {
         ChildrenMeasure init() {
             mRowCount = 0;
             mColumnCount = 0;
-            mTop = 0;
-            mHeight = 0;
+            mTop = getPaddingTop();
+            mHeight = getPaddingTop();
             mCurrentRowWidth = 0;
             mCurrentRowHeight = 0;
             mRowMaxWidth = getWidth();
@@ -304,7 +304,10 @@ public class AnimationWrapLayout extends ViewGroup {
         }
 
         int getTotalHeight() {
-            return mHeight;
+            if (mRowCount == 0) {
+                return 0;
+            }
+            return mHeight + getPaddingBottom();
         }
 
         SparseArray<Layout> getLayoutSet() {
@@ -322,14 +325,14 @@ public class AnimationWrapLayout extends ViewGroup {
             int childTotalWidth = childWidth + rightMargin + leftMargin;
             int childTotalHeight = childHeight + topMargin + bottomMargin;
 
-            if (isNewLine(childWidth + mEachMarginWidth + rightMargin) || (mColumnCount == 0 && mRowCount == 0)) {
+            if (mRowMaxWidth < mCurrentRowWidth + childWidth + mEachMarginWidth + rightMargin + getPaddingRight() || (mColumnCount == 0 && mRowCount == 0)) {
                 mRowCount++;
                 mColumnCount = 1;
                 if (mRowCount > 1) {
                     mTop = mHeight + mEachMarginHeight;
                 }
                 mCurrentRowHeight = 0;
-                mCurrentRowWidth = 0;
+                mCurrentRowWidth = getPaddingLeft();
             } else {
                 mColumnCount++;
             }
@@ -346,10 +349,6 @@ public class AnimationWrapLayout extends ViewGroup {
             mCurrentRowHeight = mCurrentRowHeight < childTotalHeight ? childTotalHeight : mCurrentRowHeight;
             mCurrentRowWidth += childTotalWidth;
             return new Layout(l, t, r, b);
-        }
-
-        private boolean isNewLine(int width) {
-            return mRowMaxWidth < mCurrentRowWidth + width;
         }
     }
 
