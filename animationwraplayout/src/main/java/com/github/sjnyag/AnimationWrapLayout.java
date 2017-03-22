@@ -95,7 +95,10 @@ public class AnimationWrapLayout extends ViewGroup {
         return new AnimationWrapLayout.LayoutParams(p);
     }
 
-    synchronized public void addViewWithAnimation(final View view, final int position) {
+    synchronized public boolean addViewWithAnimation(final View view, final int position) {
+        if (mAddedViewContainer != null) {
+            return false;
+        }
         mAddedViewContainer = new AddedViewContainer(view, position);
         final float alpha = view.getAlpha();
         final List<View> animatedViewList = new ArrayList<>();
@@ -112,7 +115,7 @@ public class AnimationWrapLayout extends ViewGroup {
                     mAddedViewContainer = null;
                 }
             });
-            return;
+            return true;
         }
         for (int i = 0; i < count; i++) {
             final View child = this.getChildAt(i);
@@ -146,9 +149,10 @@ public class AnimationWrapLayout extends ViewGroup {
                 animatedViewList.add(child);
             }
         }
+        return true;
     }
 
-    synchronized public void removeViewWithAnimation(final View view) {
+    synchronized public boolean removeViewWithAnimation(final View view) {
         SparseArray<Layout> layoutSet = mChildrenMeasure.init().without(view).measure().getLayoutSet();
         int count = this.getChildCount();
         for (int i = 0; i < count; i++) {
@@ -174,6 +178,7 @@ public class AnimationWrapLayout extends ViewGroup {
                 removeView(view);
             }
         });
+        return true;
     }
 
     protected boolean addAnimation(final View view, final float alpha, final AnimationCallback callback) {

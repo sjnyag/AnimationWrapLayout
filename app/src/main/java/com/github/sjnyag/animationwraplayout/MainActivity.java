@@ -27,7 +27,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.register).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mList.addViewWithAnimation(inflateTextView(), 0);
+                if (!mList.addViewWithAnimation(inflateTextView(), 0)) {
+                    mCounter--;
+                }
             }
         });
     }
