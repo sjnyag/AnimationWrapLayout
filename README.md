@@ -45,10 +45,19 @@ Import AnimationWrapLayout dependency
 --------------------------------
 
 your build.gradle
+```groovy
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
 
 ```groovy
 dependencies {
-    compile 'com.github.sjnyag:animationwraplayout'
+        compile 'com.github.sjnyag:AnimationWrapLayout:1.0.0'
 }
 ```
 
