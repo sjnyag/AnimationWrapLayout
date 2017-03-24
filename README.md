@@ -1,4 +1,4 @@
-# AnimationWrapLayout
+# AnimationWrapLayout [![](https://jitpack.io/v/sjnyag/AnimationWrapLayout.svg)](https://jitpack.io/#sjnyag/AnimationWrapLayout)
 AnimationWrapLayout is an Android library used to create a layout which aligns child views dynamically (with a animation) on a new line.
 
 Screenshots
