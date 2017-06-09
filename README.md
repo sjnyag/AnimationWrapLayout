@@ -26,17 +26,17 @@ Usage
 2. Call ``addViewWithAnimation(View view, int position)`` or ``removeViewWithAnimation(View view)`` instead of ``addView`` or ``removeView`` to feel the same way as ViewGroup. 
 
 ```java
-        AnimationWrapLayout list = (AnimationWrapLayout) findViewById(R.id.list);
+        AnimationWrapLayout layout = (AnimationWrapLayout) findViewById(R.id.list);
         findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mList.addViewWithAnimation(yourView, position);
+                layout.addViewWithAnimation(yourView, anyPosition);
             }
         });
         findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mList.removeViewWithAnimation(yourView)
+                layout.removeViewWithAnimation(yourView)
             }
         });
 ```
