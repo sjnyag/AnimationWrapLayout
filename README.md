@@ -13,7 +13,7 @@ Usage
 1. Add ``AnimationWrapLayout`` widget to your layout.
 
 ```xml
-    <com.github.sjnyag.AnimationWrapLayout
+    <com.github.sjnyag.animationwraplayout.AnimationWrapLayout
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

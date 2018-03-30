@@ -1,4 +1,4 @@
-package com.github.sjnyag;
+package com.github.sjnyag.animationwraplayout;
 
 import org.junit.Test;
 

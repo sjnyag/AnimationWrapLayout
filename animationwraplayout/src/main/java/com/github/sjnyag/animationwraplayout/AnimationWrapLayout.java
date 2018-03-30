@@ -1,4 +1,4 @@
-package com.github.sjnyag;
+package com.github.sjnyag.animationwraplayout;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+
+import com.github.sjnyag.animationwraplayout.R;
 
 import java.util.ArrayList;
 import java.util.List;

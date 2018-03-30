@@ -8,8 +8,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 
-import com.github.sjnyag.AnimationWrapLayout;
-
 import java.util.Locale;
 import java.util.Random;
 
