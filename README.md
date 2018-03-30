@@ -57,7 +57,7 @@ allprojects {
 
 ```groovy
 dependencies {
-        compile 'com.github.sjnyag:AnimationWrapLayout:0.2.0'
+        compile 'com.github.sjnyag:AnimationWrapLayout:0.3.0'
 }
 ```
 

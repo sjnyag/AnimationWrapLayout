@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 
-import com.github.sjnyag.animationwraplayout.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
